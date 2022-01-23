@@ -4,7 +4,9 @@
 
 This script produces the plots from Figure 6, 14, 15, and 16 of the paper. 
 
-IMPORTANT: first compute the raw results by running 
+IMPORTANT: 
+    - first compute the raw results by running compute_evolution.py
+    - the parameters should correspond to something already computed
 
 """
 
@@ -19,15 +21,18 @@ from utils.aux_functions import get_result_path
 
 DBL_MAX = sys.float_info.max
 
-# params
+# quickshift hyperparameters
 kernel_size = 5
 ratio = 1.0
+
+# image shape and noise level: tweak here if you want to plot something different
 min_shape = 150
-max_shape = 300
+max_shape = 160
 n_exp = max_shape-min_shape
 shape_store = np.arange(min_shape,max_shape)
-sigmas = np.array([0.001,1])
+sigmas = np.array([1,10])
 n_sigmas = sigmas.shape[0]
+
 dms = np.array([DBL_MAX,18,10])
 n_dm = dms.shape[0]
 n_rep = 10
@@ -122,7 +127,7 @@ for i_dist in range(n_dm):
     # xlabel
     ax[i_dist].set_xlabel("rectangle width",fontsize=small_fs)
     
-    # dropping common scale
+    # set a common scale
     #ax[i_dist].set_ylim(0,np.max())
 
 # saving the figure

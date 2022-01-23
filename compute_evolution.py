@@ -31,7 +31,7 @@ DBL_MAX = sys.float_info.max
 # default values: kernel_size = 5, kernel_width = 15, max_dist = 10
 kernel_size = 10
 kernel_width = 3*kernel_size
-max_dist = 20
+max_dist = 15
 
 # shape of the image and noise level
 sigma = 5.0
@@ -50,7 +50,7 @@ background_color = (100,100,100)
 # - 299 is the imagenet standard
 # - should start at 4*kernel_width minimum to avoid any problem
 min_shape = 150
-max_shape = 300
+max_shape = 160
 n_exp = max_shape - min_shape
 n_seg_store = np.zeros((n_exp,n_rep),dtype=int)
 n_max_store = np.zeros((n_exp,n_rep),dtype=int)
