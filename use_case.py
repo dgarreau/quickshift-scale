@@ -20,12 +20,25 @@ from utils.aux_functions import format_helper
 from utils.aux_functions import load_image
 from utils.aux_functions import get_segmentation
 from utils.aux_functions import name_helper
+from utils.aux_functions import dataset_helper
+from utils.aux_functions import path_helper
 
 from utils.aux_functions import ILSVRC_index_reader
 
+DBL_MAX = sys.float_info.max
+
 t_start = time.time()
 
-DBL_MAX = sys.float_info.max
+# specify the dataset name here
+dataset = 'cityscapes'
+
+if dataset == 'ILSVRC':
+    
+    # path to the index file
+    index_path = "utils/images_id.txt"
+    ids,rect_store = ILSVRC_index_reader(index_path,verbose=False)
+
+n_images,data_path = dataset_helper(dataset)
 
 # the ratio for image rescaling
 ratio = 2.0
@@ -38,37 +51,32 @@ max_dist = DBL_MAX
 # for print purposes
 s_kernel_size,s_max_dist = format_helper(kernel_size,max_dist)
 
-# path to the data
-data_folder = "../data/ILSVRC/Data/DET/test/"
-
 # path to the precomputed segmentations
-result_folder = "../results/segmentations/ILSVRC/"
-
-# path to the index file
-index_path = "utils/images_id.txt"
-
-ids,rect_store = ILSVRC_index_reader(index_path,verbose=False)
-n_images = ids.shape[0]
+result_folder = "../results/segmentations/" + dataset
 
 #i_image = 30
 #id_image = ids[i_image]
 id_image = 7
 print("looking at image {}".format(id_image))
+print()
 
 # segmentating the small image
-image_path = data_folder + name_helper(id_image) + '.JPEG'
+image_name = name_helper(id_image,dataset)
+image_path = path_helper(data_path,image_name,dataset)
 small_image_rgb = load_image(image_path,ratio=ratio,verbose=True)
-small_seg = get_segmentation(result_folder,data_folder,id_image,ratio=ratio,kernel_size=kernel_size,max_dist=max_dist)
+small_seg = get_segmentation(result_folder,data_path,id_image,ratio=ratio,kernel_size=kernel_size,max_dist=max_dist,dataset=dataset,verbose=True)
 n_small = len(np.unique(small_seg))
 print("ratio = {}, ks = {}, dm = {}:".format(ratio,kernel_size,max_dist))
 print("   {} superpixels".format(n_small))
+print()
 
 # segmentating the large image with the same parameters
 large_image_rgb = load_image(image_path,verbose=True)
-large_seg = get_segmentation(result_folder,data_folder,id_image,ratio=None,kernel_size=kernel_size,max_dist=max_dist)
+large_seg = get_segmentation(result_folder,data_path,id_image,ratio=None,kernel_size=kernel_size,max_dist=max_dist,dataset=dataset,verbose=True)
 n_large = len(np.unique(large_seg))
 print("ratio = None, ks = {}, dm = {}".format(kernel_size,max_dist))
 print("   {} superpixels".format(n_large))
+print()
 
 # rescaling the parameters
 new_kernel_size = ratio*kernel_size
@@ -77,10 +85,11 @@ if max_dist == DBL_MAX:
 else:
     new_max_dist = ratio*max_dist
 s_ks_new,s_dm_new = format_helper(new_kernel_size,new_max_dist)
-new_seg = get_segmentation(result_folder,data_folder,id_image,ratio=None,kernel_size=new_kernel_size,max_dist=new_max_dist)
+new_seg = get_segmentation(result_folder,data_path,id_image,ratio=None,kernel_size=new_kernel_size,max_dist=new_max_dist,dataset=dataset,verbose=True)
 n_rescaled = len(np.unique(new_seg))
 print("ratio = None, ks = {}, dm = {}".format(new_kernel_size,new_max_dist))
 print("   {} superpixels".format(n_rescaled))
+print()
 
 t_end = time.time()
 
@@ -113,6 +122,7 @@ ax[2].imshow(mark_boundaries(large_image_rgb,new_seg))
 ax[2].set_title(s_title_2,fontsize=big_fs)
 ax[2].axis('off')
 
-fig_name = "../figures/final_rescaling_id_" + str(id_image) + "_ks_" + s_kernel_size + "_dm_" + s_max_dist + "_ratio_" + str(ratio) + ".pdf"
-fig.savefig(fig_name,format='pdf',bbox_inches = 'tight',pad_inches = 0)
+# saving the figure
+#fig_name = "../figures/final_rescaling_id_" + str(id_image) + "_ks_" + s_kernel_size + "_dm_" + s_max_dist + "_ratio_" + str(ratio) + ".pdf"
+#fig.savefig(fig_name,format='pdf',bbox_inches = 'tight',pad_inches = 0)
 

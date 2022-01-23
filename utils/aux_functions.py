@@ -149,6 +149,7 @@ def get_segmentation(result_folder,data_path,id_image,ratio=None,kernel_size=5,m
     otherwise.
     """
     image_name = name_helper(id_image,dataset=dataset)
+    image_path = path_helper(data_path,image_name,dataset)
     result_path = get_result_path(result_folder,kernel_size,max_dist,ratio=ratio)
     seg_path = os.path.join(result_path,image_name + '.pkl')
     if verbose:
@@ -166,7 +167,7 @@ def get_segmentation(result_folder,data_path,id_image,ratio=None,kernel_size=5,m
             if verbose:
                 print("The result file does not seem to exist, computing the segmentation...")
             
-            image_rgb = load_image(data_path,id_image,ratio=ratio,verbose=verbose)
+            image_rgb = load_image(image_path,ratio=ratio,verbose=verbose)
             seg = quickshift(image_rgb,kernel_size=kernel_size,max_dist=max_dist)
     
     return seg
