@@ -4,9 +4,6 @@
 
 Use-case experiment. Run this script to obtain Figure 9, 14-16 of the paper. 
 
-TODO: other datasets!
- - nonsense with the comma
-
 """
 
 import numpy as np
